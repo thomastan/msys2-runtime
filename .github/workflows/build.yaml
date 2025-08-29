@@ -38,6 +38,20 @@ jobs:
           name: install
           path: _dest/
 
+      - name: Package a minimal runtime
+        run: |
+          mkdir ${{ runner.temp }}\minimal-pkg -Force
+          cp ${{ runner.temp }}\msys64\usr\bin\bash.exe ${{ runner.temp }}\minimal-pkg
+          cp _dest/usr/bin/msys-2.0.dll ${{ runner.temp }}\minimal-pkg
+          cp _dest/usr/bin/cygpath.exe ${{ runner.temp }}\minimal-pkg
+          cp _dest/usr/bin/cygwin-console-helper.exe ${{ runner.temp }}\minimal-pkg
+
+      - name: Upload the minimal set
+        uses: actions/upload-artifact@v4
+        with:
+          name: minimal
+          path: ${{ runner.temp }}\minimal-pkg
+
   generate-msys2-tests-matrix:
     runs-on: ubuntu-latest
     outputs:
