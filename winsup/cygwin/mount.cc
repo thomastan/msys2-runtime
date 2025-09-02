@@ -557,7 +557,7 @@ mount_info::create_root_entry (const PWCHAR root)
      This allows to override it with mount, unless the sysadmin created
      a cygdrive entry in /etc/fstab. */
   cygdrive_flags = MOUNT_NOPOSIX | MOUNT_CYGDRIVE | MOUNT_NOACL;
-  strcpy (cygdrive, CYGWIN_INFO_CYGDRIVE_DEFAULT_PREFIX "/");
+  strcpy (cygdrive, /*CYGWIN_INFO_CYGDRIVE_DEFAULT_PREFIX*/ "/");
   cygdrive_len = strlen (cygdrive);
 }
 
