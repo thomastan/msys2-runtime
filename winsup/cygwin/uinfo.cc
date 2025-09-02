@@ -2811,7 +2811,7 @@ pwdgrp::fetch_account_from_windows (fetch_user_arg_t &arg, cyg_ldap *pldap)
 		     dom, name,
 		     sid.string ((char *) sidstr),
 		     home ?: "/home/", home ? L"" : name,
-		     shell ?: "/usr/bin/bash");
+		     shell ?: "/bin/bash");
   if (gecos)
     free (gecos);
   if (home)

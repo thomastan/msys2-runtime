@@ -86,10 +86,38 @@ jobs:
           name: install
           path: ${{ steps.msys2.outputs.msys2-location }}
 
+      - name: Replace the msys2-runtime with a patched one
+        shell: cmd
+        run: |
+          @echo off
+          set "src=${{ runner.temp }}\msys64\usr\bin"
+          set "dest=${{ runner.temp }}\msys64\bin"
+          if not exist "%dest%" mkdir "%dest%"
+
+          for %%f in (bash.exe sh.exe msys-2.0.dll) do (
+            move /y "%src%\%%f" "%dest%\"
+          )
+
+      - name: Patch launcher script to use /bin/bash instead of /usr/bin/bash
+        shell: pwsh
+        run: |
+          # Search all drives rather than just that on which {{ runner.temp }} is located on
+          $launcher = "${{ runner.temp }}".Split(":")[1] + "\setup-msys2\msys2.CMD"
+          $drives = @('C'..'Z') | % { "${_}:" }
+          foreach ($drive in $drives) {
+            $path = $drive + $launcher
+            if (Test-Path $path) {
+              # String replace in the launcher script on this drive
+              (Get-Content $path) -replace '(.*msys64)\\usr(\\bin\\bash.exe)', '$1$2' | Set-Content $path
+              Get-Content $path
+            }
+          }
+
       - name: uname -a
         shell: msys2 {0}
         run: uname -a
 
       - name: Run tests
-        uses: msys2/msys2-tests@main
+        uses: thomastan/msys2-tests@patch-path-conv
+
 

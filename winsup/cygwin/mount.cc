@@ -582,7 +582,7 @@ mount_info::init (bool user_init)
       if (root_idx < 0)
         api_fatal ("root_idx %d, user_shared magic %y, nmounts %d", root_idx, user_shared->version, nmounts);
       char *p = stpcpy (native, mount[root_idx].native_path);
-      stpcpy (p, "\\usr\\bin");
+      stpcpy (p, "\\bin");
       add_item (native, "/bin", MOUNT_SYSTEM | MOUNT_AUTOMATIC | MOUNT_NOACL);
     }
 }
