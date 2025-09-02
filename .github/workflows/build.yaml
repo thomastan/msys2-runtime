@@ -97,5 +97,5 @@ jobs:
         run: uname -a
 
       - name: Run tests
-        uses: msys2/msys2-tests@main
+        uses: thomastan/msys2-tests@expect-wintemp
 
