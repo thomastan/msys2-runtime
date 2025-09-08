@@ -86,6 +86,12 @@ jobs:
           name: install
           path: ${{ steps.msys2.outputs.msys2-location }}
 
+      - name: Add /bin mount manually to /etc/fstab
+        shell: msys2 {0}
+        run: |
+          MSYS2ROOT=$(mount | awk '$3 == "/" {print $1; exit}')
+          echo "${MSYS2ROOT}/usr/bin /bin ntfs binary,noacl,auto 0 0" | tee -a ${MSYS2ROOT}/etc/fstab
+
       - name: uname -a
         shell: msys2 {0}
         run: uname -a
