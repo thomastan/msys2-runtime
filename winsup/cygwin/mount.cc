@@ -571,7 +571,19 @@ mount_info::init (bool user_init)
 
   pathend = wcpcpy (path, cygheap->installation_root.Buffer);
   if (!user_init)
-    create_root_entry (path);
+    {
+      create_root_entry (path);
+
+      WCHAR tmp[PATH_MAX + 1];
+      if (GetTempPathW (PATH_MAX, tmp))
+	{
+	  tmp_pathbuf tp;
+	  char *mb_tmp = tp.c_get ();
+	  sys_wcstombs (mb_tmp, PATH_MAX, tmp);
+
+	  mount_table->add_item (mb_tmp, "/tmp", MOUNT_USER_TEMP | MOUNT_AUTOMATIC | MOUNT_NOACL | MOUNT_NOPOSIX);
+	}
+    }
 
   pathend = wcpcpy (pathend, L"\\etc\\fstab");
   from_fstab (user_init, path, pathend);
