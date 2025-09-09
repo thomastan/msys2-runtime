@@ -322,6 +322,7 @@ cuserid (char *src)
   return src;
 }
 
+static char * fetch_home_env (void);
 const char *
 cygheap_user::ontherange (homebodies what, struct passwd *pw)
 {
@@ -342,7 +343,9 @@ cygheap_user::ontherange (homebodies what, struct passwd *pw)
 	  if (pw && pw->pw_dir && *pw->pw_dir)
 	    {
 	      debug_printf ("Set HOME (from account db) to %s", pw->pw_dir);
-	      setenv ("HOME", pw->pw_dir, 1);
+	      //setenv ("HOME", pw->pw_dir, 1);
+	      if ((p = fetch_home_env ()))  // Prefer the 'env' method
+		setenv ("HOME", p, 1);  // Windows %HOME%, then HomeDrive HomePath, then UserProfile
 	    }
 	  else
 	    {
