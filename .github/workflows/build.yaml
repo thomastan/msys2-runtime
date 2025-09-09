@@ -132,6 +132,6 @@ jobs:
         run: uname -a
 
       - name: Run tests
-        uses: thomastan/msys2-tests@patch-path-conv
+        uses: thomastan/msys2-tests@patched-tests
 
 

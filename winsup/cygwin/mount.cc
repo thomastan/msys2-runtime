@@ -557,7 +557,7 @@ mount_info::create_root_entry (const PWCHAR root)
      This allows to override it with mount, unless the sysadmin created
      a cygdrive entry in /etc/fstab. */
   cygdrive_flags = MOUNT_NOPOSIX | MOUNT_CYGDRIVE | MOUNT_NOACL;
-  strcpy (cygdrive, CYGWIN_INFO_CYGDRIVE_DEFAULT_PREFIX "/");
+  strcpy (cygdrive, /*CYGWIN_INFO_CYGDRIVE_DEFAULT_PREFIX*/ "/");
   cygdrive_len = strlen (cygdrive);
 }
 
@@ -571,7 +571,19 @@ mount_info::init (bool user_init)
 
   pathend = wcpcpy (path, cygheap->installation_root.Buffer);
   if (!user_init)
-    create_root_entry (path);
+    {
+      create_root_entry (path);
+
+      WCHAR tmp[PATH_MAX + 1];
+      if (GetTempPathW (PATH_MAX, tmp))
+	{
+	  tmp_pathbuf tp;
+	  char *mb_tmp = tp.c_get ();
+	  sys_wcstombs (mb_tmp, PATH_MAX, tmp);
+
+	  mount_table->add_item (mb_tmp, "/tmp", MOUNT_USER_TEMP | MOUNT_AUTOMATIC | MOUNT_NOACL | MOUNT_NOPOSIX);
+	}
+    }
 
   pathend = wcpcpy (pathend, L"\\etc\\fstab");
   from_fstab (user_init, path, pathend);
@@ -581,9 +593,9 @@ mount_info::init (bool user_init)
       char native[PATH_MAX];
       if (root_idx < 0)
         api_fatal ("root_idx %d, user_shared magic %y, nmounts %d", root_idx, user_shared->version, nmounts);
-      char *p = stpcpy (native, mount[root_idx].native_path);
-      stpcpy (p, "\\bin");
-      add_item (native, "/bin", MOUNT_SYSTEM | MOUNT_AUTOMATIC | MOUNT_NOACL);
+      /* char *p = */ stpcpy (native, mount[root_idx].native_path);
+      // stpcpy (p, "\\usr\\bin");
+      // add_item (native, "/bin", MOUNT_SYSTEM | MOUNT_AUTOMATIC | MOUNT_NOACL);
     }
 }
 
